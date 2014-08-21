@@ -1,0 +1,15 @@
+// $.map
+//
+// var $departments = $.map(departments, function(department, i) {
+//   return $("[data-category='" + department + "']");
+// });
+
+// $.each
+// (this one is ugly)
+//
+// var $departments = [];
+// $.each(departments, function(key, department) {
+//   var $department = $("[data-category='" + department + "']");
+//   $departments.push($department);
+// });
+
