@@ -42,8 +42,30 @@
   text-align: center;
 }
 
+
+.remove-item {
+  display: inline-block;
+  padding-right: 5px;
+  color: #888;
+}
+
+.remove-item:hover {
+  cursor: pointer;
+  opacity: 0.5 !important;
+}
+
 @media (min-width: 1024px) {
   .q1-wrapper {
     width: 100% !important;
   }
+}
+
+.dragging {
+  border: 1px dashed #ccc;
+  padding: 10px 0px;
+  cursor: url(https://mail.google.com/mail/images/2/closedhand.cur) 8 8, move;
+}
+
+.item-list:hover {
+  cursor: url(https://mail.google.com/mail/images/2/openhand.cur) 8 8, move;
 }

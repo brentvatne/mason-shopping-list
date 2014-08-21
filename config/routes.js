@@ -35,7 +35,9 @@ module.exports.routes = {
 
   '/': {
     view: 'shopping_list'
-  }
+  },
+
+  'DELETE /items/destroy_all': 'ItemController.destroyAll'
 
   /***************************************************************************
   *                                                                          *

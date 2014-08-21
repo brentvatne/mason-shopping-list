@@ -6,6 +6,12 @@
  */
 
 module.exports = {
-	
+
+  destroyAll: function(req, res) {
+    Item.destroy({}).exec(function(err, response) {
+      res.json({success: true});
+    })
+  }
+
 };
 
