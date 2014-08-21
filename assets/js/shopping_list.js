@@ -62,6 +62,12 @@ $(function() {
         updateItemById(item.id, {category: newCategory});
       }
     });
+
+    updateTotal();
+  };
+
+  var updateTotal = function() {
+    // Find all the amounts on the page, add them together, set the amount
   };
 
   var updateItemById = function(id, newOptions) {
