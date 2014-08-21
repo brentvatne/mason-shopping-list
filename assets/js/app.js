@@ -1,121 +1,165 @@
-// var name, amount = 0, total = 0;
-// 
-// window.renderShoppingList = function(shoppingList) {
-//   // empty out wrapper
-// 
-//   // For each item in our JSON, add a list item
-//   // $.each(window.shoppingList.category, function(department) {
-//     // Re-draw each of the lists with the new data
-//     // create a column, set the name to the department name
-// 
-// 
-//   //   var $parent = $("." + category);
-//   //   console.log(category);
-// 
-//   // });
-// 
-//     var $parent = $("." + shoppingList.category);
-//     // window.shoppingList = shoppingList;
-//     var name = shoppingList.name,
-//         amount = shoppingList.amount;
-// 
-//     // A list of product name and amount
-//     itemList = $("<div/>", {
-//       "class": "item-list clearfix"
-//     }).appendTo($parent);
-// 
-//     // Name of the product
-//     $("<div/>", {
-//       "class": "item-name col-md-7 pull-left",
-//       "text": name
-//     }).appendTo(itemList);
-// 
-//     // Name of the price
-//     $("<div/>", {
-//       "class": "item-price col-md-3 pull-left",
-//       "text": "$" + amount
-//     }).appendTo(itemList);
-// 
-//     // Remove button
-//     $("<div/>", {
-//       "class": "remove-item pull-right",
-//       "text": "remove",
-//       click: function() {
-//         // amount to be removed
-//         var price_value = $(this).siblings(".item-price").html();
-//         var price = parseFloat(price_value.replace("$", ""));
-//         total = total - price * 1.10;
-//         $(".price-summary").html("Total: $" + total.toFixed(2));
-//         // remove this item list
-//         $(this).parent().remove();
-//       }
-//     }).appendTo(itemList);
-// 
-// 
-//     // Draggable
-//     itemList.draggable({
-//       revert: "invalid",
-//       revertDuration: 200
-//     });
-// }
-// 
-// window.renderDepartmentOptions = function(category) {
-//   // var $departmentSelector = $('.' + category);
-//   // $departmentSelector.empty()
-//   // $.each(window.shoppingList.departments, function(department) {
-//   //   var $option = $('<option value="' + department.name + '">' + department.name + '</option>')
-//   //   $departmentSelector.append($option);
-//   // });
-// };
-// 
-// window.addToShoppingList = function(category, name, amount) {
-//   // Add the item to window.shoppingList
-//   // Submit post request
-// 
-// }
-// 
-// window.deleteShoppingList = function(category, name, amount) {
-// 
-// }
-// 
-// 
-// // jQuery Ajax call for JSON
-// $.getJSON(ApiEndpoints.index, function(shoppingList) {
-//   window.shoppingList = shoppingList;
-// 
-//   for(var i = 0; i < shoppingList.length; i++) {
-//     renderShoppingList(shoppingList[i]);
-//   }
-// 
-//   // renderDepartmentOptions();
-//   // renderShoppingList();
-// });
-// 
-// $(function() {
-//   $(".shopping-container").droppable({
-//     drop: function(event, ui) {
-//       // Snap dropped element
-//       $(ui.draggable).detach().css({top: 0, left: 0}).appendTo(this);
-//     },
-//     revert: "valid",
-//     revertDuration:200
-//   });
-// 
-//   // Add item to category
-//   $(".action-form").submit(function(e) {
-//     e.preventDefault();
-// 
-//     // Get the selected product category
-//     var category = $("select[name='item-type'] option:selected").val();
-// 
-//     // Create list
-//     createListElement(category);
-//   });
-// 
-//   // Clear all items from the list
-//   $(".remove").click(function() {
-//     $(".item-list").remove();
-//     total = 0;
-//     $(".price-summary").html("Total: $" + total.toFixed(2));
-//   });
-// });
+$(function() {
+  var departments = ["produce", "grocery", "dairy", "meat", "other"];
+  var $list = $('.list-wrapper');
+  var $nameField = $("input[name='product_name']");
+  var $amountField = $("input[name='amount']");
+  var $categoryField = $(".department-name-select");
+
+  // Save a reference to all of the department elements, indexed by
+  // the department name
+  //
+  var $departments = {};
+  $.each(departments, function(key, departmentName) {
+    var $department = $("[data-category='" + departmentName + "']");
+    $departments[departmentName] = $department;
+  });
+
+  var renderItems = function(items) {
+    $.each(items, function(i, item) {
+      renderItem(item);
+    });
+  };
+
+  var renderItem = function(item) {
+    var name = item.name,
+        amount = item.amount,
+        $department = $departments[item.category];
+
+    // A list of product name and amount
+    var $itemList = $("<div/>", {
+      "class": "item-list clearfix"
+    }).appendTo($department);
+
+    // Name of the product
+    $("<div/>", {
+      "class": "item-name col-md-7 pull-left",
+      "text": name
+    }).appendTo($itemList);
+
+    // Name of the price
+    $("<div/>", {
+      "class": "item-price col-md-3 pull-left",
+      "text": "$" + amount.toString()
+    }).appendTo($itemList);
+
+    // Remove button
+    $("<div/>", {
+      "class": "remove-item pull-right",
+      "text": "remove",
+      click: function() {
+        $itemList.fadeOut('fast', function() { $itemList.remove() });
+        deleteItemById(item.id);
+      }
+    }).appendTo($itemList);
+
+    $itemList.draggable({
+      revert: "invalid",
+      revertDuration: 200,
+      start: function() {
+        $itemList.addClass('dragging');
+        console.log('started dragging');
+      },
+      stop: function() {
+        $itemList.removeClass('dragging');
+        var newCategory = $itemList.parents('.shopping-container').first().data('category')
+        updateItemById(item.id, {category: newCategory});
+      }
+    });
+
+    updateTotal();
+  };
+
+  var updateTotal = function() {
+    // Find all the amounts on the page, add them together, set the amount
+  };
+
+  var updateItemById = function(id, newOptions) {
+    $.ajax({
+      url: '/items/' + id,
+      type: 'PUT',
+      data: newOptions,
+      success: function(result) {
+        console.log(result)
+      }
+    });
+  };
+
+  var deleteItemById = function(id) {
+    $.ajax({
+      url: '/items/' + id,
+      type: 'delete',
+      success: function(result) {
+        console.log(result)
+      }
+    });
+  };
+
+  var deleteAllItems = function() {
+    $.ajax({
+      url: '/items/destroy_all',
+      type: 'delete',
+      success: function(result) {
+        console.log(result)
+      }
+    });
+  };
+
+  var createNewItem = function(item) {
+    $.post('/items', item, function(savedItem) {
+      renderItem(savedItem);
+    });
+  };
+
+  var getAllItems = function() {
+    $.get('/items', function(items) {
+      renderItems(items);
+    });
+  };
+
+  var getNewItemValues = function() {
+    name = $nameField.val();
+    amount = $amountField.val();
+    category = $categoryField.val();
+
+    return {
+      name: name,
+      amount: amount,
+      category: category
+    };
+  };
+
+  var clearItemFields = function() {
+    $.each([$nameField, $amountField, $categoryField], function(i, $el) {
+      $el.val('');
+    });
+
+    $categoryField.find('option:first').prop('selected', true);
+    $nameField.focus();
+  }
+
+  // Attach events
+  $('.action-form').submit(function(e) {
+    e.preventDefault();
+    newItem = getNewItemValues();
+    createNewItem(newItem);
+    clearItemFields();
+  });
+
+  $('.remove-all').click(function(e) {
+    e.preventDefault();
+    $('.item-list').fadeOut(function() { $(this).remove() });
+    deleteAllItems();
+  });
+
+  $(".shopping-container").droppable({
+    drop: function(event, ui) {
+      // Snap dropped element
+      $(ui.draggable).detach().css({top: 0, left: 0}).appendTo(this);
+    },
+    revert: "valid",
+    revertDuration:200
+  });
+
+  // Initialize the app
+  getAllItems();
+});
