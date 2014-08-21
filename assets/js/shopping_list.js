@@ -1,6 +1,9 @@
 $(function() {
   var departments = ["produce", "grocery", "dairy", "meat", "other"];
   var $list = $('.list-wrapper');
+  var $nameField = $("input[name='product_name']");
+  var $amountField = $("input[name='amount']");
+  var $categoryField = $(".department-name-select");
 
   // Save a reference to all of the department elements, indexed by
   // the department name
@@ -114,9 +117,9 @@ $(function() {
   };
 
   var getNewItemValues = function() {
-    name = $("input[name='product_name']").val();
-    amount = $("input[name='amount']").val();
-    category = $(".department-name-select").val();
+    name = $nameField.val();
+    amount = $amountField.val();
+    category = $categoryField.val();
 
     return {
       name: name,
@@ -125,11 +128,21 @@ $(function() {
     };
   };
 
+  var clearItemFields = function() {
+    $.each([$nameField, $amountField, $categoryField], function(i, $el) {
+      $el.val('');
+    });
+
+    $categoryField.find('option:first').prop('selected', true);
+    $nameField.focus();
+  }
+
   // Attach events
   $('.action-form').submit(function(e) {
     e.preventDefault();
     newItem = getNewItemValues();
     createNewItem(newItem);
+    clearItemFields();
   });
 
   $('.remove-all').click(function(e) {
