@@ -34,7 +34,7 @@ module.exports.connections = {
 
   productionMongoHqDb: {
     adapter: 'sails-mongo',
-    url: process.env.MONOGHQ_URL
+    url: process.env.MONGOHQ_URL
   },
 
   /***************************************************************************
